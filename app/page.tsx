@@ -27,6 +27,7 @@ export default function Home() {
   const [day, setDay] = useState("");
   const [hour, setHour] = useState("12");
   const [minute, setMinute] = useState("0");
+  const [isTimeUnknown, setIsTimeUnknown] = useState(false);
   const [gender, setGender] = useState<Gender>("male");
   const [result, setResult] = useState<SajuResult | null>(null);
 
@@ -51,8 +52,8 @@ export default function Home() {
 
     setStep("loading");
 
-    const hourNum = isNaN(h) ? 12 : h;
-    const minuteNum = isNaN(min) ? 0 : min;
+    const hourNum = isTimeUnknown ? undefined : (isNaN(parseInt(hour, 10)) ? 12 : parseInt(hour, 10));
+    const minuteNum = isTimeUnknown ? undefined : (isNaN(parseInt(minute, 10)) ? 0 : parseInt(minute, 10));
 
     await new Promise((r) => setTimeout(r, 2200));
     const res = calculateSaju(y, m, d, hourNum, minuteNum);
@@ -62,7 +63,7 @@ export default function Home() {
       await sendToGoogleSheets({
         name: name.trim(),
         birthDate: formatBirthDate(y, m, d),
-        birthTime: formatBirthTime(hourNum, minuteNum),
+        birthTime: isTimeUnknown ? "모름" : formatBirthTime(hourNum ?? 12, minuteNum ?? 0),
         gender: gender === "male" ? "남" : "여",
         resultType: res.typeName,
         resultTitle: res.title,
@@ -209,33 +210,49 @@ export default function Home() {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.2 }}
               >
-                <label className="block text-gold/90 text-sm font-medium mb-2">
-                  태어난 시간
-                </label>
-                <div className="grid grid-cols-2 gap-2">
-                  <select
-                    value={hour}
-                    onChange={(e) => setHour(e.target.value)}
-                    className="px-3 py-3 rounded-lg bg-deep border border-gold/40 text-gold focus:outline-none focus:ring-2 focus:ring-gold/50"
-                  >
-                    {Array.from({ length: 24 }, (_, i) => (
-                      <option key={i} value={i}>
-                        {i}시
-                      </option>
-                    ))}
-                  </select>
-                  <select
-                    value={minute}
-                    onChange={(e) => setMinute(e.target.value)}
-                    className="px-3 py-3 rounded-lg bg-deep border border-gold/40 text-gold focus:outline-none focus:ring-2 focus:ring-gold/50"
-                  >
-                    {Array.from({ length: 60 }, (_, i) => (
-                      <option key={i} value={i}>
-                        {i}분
-                      </option>
-                    ))}
-                  </select>
+                <div className="flex justify-between items-center mb-2">
+                  <label className="text-gold/90 text-sm font-medium">태어난 시간</label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={isTimeUnknown}
+                      onChange={(e) => setIsTimeUnknown(e.target.checked)}
+                      className="w-4 h-4 accent-gold"
+                    />
+                    <span className="text-gold/70 text-xs">시간 모름</span>
+                  </label>
                 </div>
+                {!isTimeUnknown && (
+                  <div className="grid grid-cols-2 gap-2">
+                    <select
+                      value={hour}
+                      onChange={(e) => setHour(e.target.value)}
+                      className="px-3 py-3 rounded-lg bg-deep border border-gold/40 text-gold focus:outline-none focus:ring-2 focus:ring-gold/50"
+                    >
+                      {Array.from({ length: 24 }, (_, i) => (
+                        <option key={i} value={i}>
+                          {i}시
+                        </option>
+                      ))}
+                    </select>
+                    <select
+                      value={minute}
+                      onChange={(e) => setMinute(e.target.value)}
+                      className="px-3 py-3 rounded-lg bg-deep border border-gold/40 text-gold focus:outline-none focus:ring-2 focus:ring-gold/50"
+                    >
+                      {Array.from({ length: 60 }, (_, i) => (
+                        <option key={i} value={i}>
+                          {i}분
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+                {isTimeUnknown && (
+                  <div className="py-3 text-center text-gold/40 text-sm border border-dashed border-gold/20 rounded-lg">
+                    시간을 제외하고 사주를 풀이합니다.
+                  </div>
+                )}
               </motion.div>
 
               <motion.div

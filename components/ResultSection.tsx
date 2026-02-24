@@ -42,9 +42,16 @@ export default function ResultSection({
   const handleDownloadImage = async () => {
     if (captureRef.current === null) return;
     try {
+      // 1. 화질 개선을 위해 픽셀 밀도를 3배로 높임 (pixelRatio)
+      // 2. 폰트 깨짐 방지를 위해 캐시 버스팅 사용
       const dataUrl = await toPng(captureRef.current, {
         cacheBust: true,
-        backgroundColor: "#1e1e1e",
+        backgroundColor: "#111111", // 실제 배경색과 맞춤
+        pixelRatio: 3, // 숫자가 높을수록 고화질 (너무 높으면 파일이 무거워짐)
+        style: {
+          // 캡처 시 레이아웃이 틀어지지 않도록 강제 고정
+          transform: "scale(1)",
+        },
       });
       const link = document.createElement("a");
       link.download = `${name}님의_사주결과.png`;
