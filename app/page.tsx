@@ -74,26 +74,29 @@ export default function Home() {
 
   const handleShareKakao = () => {
     if (!result) return;
-    const shareUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://saju-ebon.vercel.app/";
+
     const iljuName = result.pillars.day;
-    const detail = iljuDetails[iljuName];
-    const threeLines = detail?.characteristics?.slice(0, 3).map((c) => `✔️ ${c}`).join("\n")
-      ?? `${result.title}\n✔️ 당신의 일간과 일지가 만드는 성향입니다.`;
-    const shareMessage = `✨ [나의 사주 운명 결과] ✨\n\n${name}님은 어떤 사람일까요? 👀\n\n${threeLines}\n\n... (더 보기)\n\n👇 3초만에 내 운명 확인하기\n${shareUrl}`;
-    const copyAndAlert = () => {
-      copyToClipboard(shareMessage);
-      alert("링크와 결과가 복사되었습니다. 카톡창에 붙여넣어 주세요!");
+    const details = iljuDetails[iljuName]?.characteristics ?? [];
+    const top3 = details.slice(0, 3).map((c: string) => `✔️ ${c}`).join("\n");
+
+    const shareUrl = "https://saju-ebon.vercel.app/";
+    const shareText = `✨ [나의 사주 운명 결과] ✨\n\n${name}님은 어떤 사람일까요? 👀\n\n${top3}\n\n... (더 보기)\n\n👇 3초만에 내 운명 확인하기\n${shareUrl}`;
+
+    const fallbackCopyAndAlert = () => {
+      copyToClipboard(shareText);
+      alert("결과가 복사되었습니다. 카톡창에 붙여넣어 주세요!");
     };
 
     if (typeof navigator !== "undefined" && navigator.share) {
       navigator
         .share({
-          title: "나의 사주 결과",
-          text: shareMessage,
+          text: shareText,
         })
-        .catch(copyAndAlert);
+        .catch(() => {
+          fallbackCopyAndAlert();
+        });
     } else {
-      copyAndAlert();
+      fallbackCopyAndAlert();
     }
   };
 
