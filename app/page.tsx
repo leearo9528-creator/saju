@@ -66,23 +66,17 @@ export default function Home() {
         resultType: res.typeName,
         resultTitle: res.title,
       });
-    } catch {
-      // no-cors면 응답을 읽지 못하므로 무시
-    }
+    } catch {}
 
     setStep("result");
   };
 
   const handleShareKakao = () => {
     if (!result) return;
-    const shareText = `[나의 운명 확인하기]\n${name}님의 사주는 '${result.typeName}'입니다.\n${result.title}\n지금 아로의 사주 상담소에서 확인해보세요!`;
     const shareUrl = typeof window !== "undefined" ? window.location.href : "";
-
-    const kakaoAppKey = process.env.NEXT_PUBLIC_KAKAO_APP_KEY || "YOUR_KAKAO_KEY";
-    const sendUrl = `https://sharer.kakao.com/talk/friends/picker/link?app_key=${encodeURIComponent(kakaoAppKey)}&url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(shareText)}`;
-
-    const fallbackCopyAndAlert = () => {
-      copyToClipboard(shareText + "\n\n" + shareUrl);
+    const shareMessage = `✨ [나의 사주 운명 결과] ✨\n\n${name}님의 사주는 '${result.typeName}'입니다.\n${result.title}\n\n👇 내 운명도 확인하고 짐 나눔 이벤트 참여하기\n${shareUrl}`;
+    const copyAndAlert = () => {
+      copyToClipboard(shareMessage);
       alert("링크와 결과가 복사되었습니다. 카톡창에 붙여넣어 주세요!");
     };
 
@@ -90,22 +84,11 @@ export default function Home() {
       navigator
         .share({
           title: "나의 사주 결과",
-          text: shareText,
-          url: shareUrl,
+          text: shareMessage,
         })
-        .catch(() => {
-          if (kakaoAppKey !== "YOUR_KAKAO_KEY") {
-            window.open(sendUrl, "_blank", "noopener,noreferrer");
-          } else {
-            fallbackCopyAndAlert();
-          }
-        });
+        .catch(copyAndAlert);
     } else {
-      if (kakaoAppKey !== "YOUR_KAKAO_KEY") {
-        window.open(sendUrl, "_blank", "noopener,noreferrer");
-      } else {
-        fallbackCopyAndAlert();
-      }
+      copyAndAlert();
     }
   };
 

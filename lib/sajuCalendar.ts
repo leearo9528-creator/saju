@@ -172,7 +172,6 @@ export interface SajuPillars {
 
 export interface SajuResult {
   pillars: SajuPillars;
-  isGyeongSinDay: boolean;
   typeName: string;
   dayPillarName: string;
   title: string;
@@ -184,18 +183,8 @@ export interface SajuResult {
 
 function getInterpretation(
   dayStem: number,
-  dayBranch: number,
-  isGyeongSin: boolean
+  dayBranch: number
 ): { title: string; description: string; keywords: string[]; advice: string } {
-  if (isGyeongSin) {
-    return {
-      title: "의리의 혁명가, 세상을 바꾸는 경신일주",
-      description:
-        "경신(庚申)은 강금(强金)에 해당하며, 의리와 원칙으로 세상을 밝히는 상이다. 굳은 의지와 정의감으로 불의에 맞서고, 때로는 혁명가적 기질로 시대를 이끈다. 세밀한 판단력과 결단력이 있어 큰일을 이루는 명식이다.",
-      keywords: ["의리", "혁명", "결단력", "정의"],
-      advice: "당신의 원칙이 세상을 바꿉니다. 때로는 유연함도 잊지 마세요.",
-    };
-  }
   const titles: Record<number, string> = {
     0: "늘 푸른 대나무", 1: "바람에 흔들리는 등나무", 2: "밝은 태양", 3: "따뜻한 등불",
     4: "넓은 산과 대지", 5: "비옥한 논밭", 6: "단단한 쇠와 검", 7: "빛나는 보석",
@@ -248,12 +237,10 @@ export function calculateSaju(
   const dayStr = pillarName(di.stem, di.branch);
   const hourStr = pillarName(ho.stem, ho.branch);
 
-  const isGyeongSinDay = dayIndex === 56;
-
   const typeName = `${yearStr}년 ${monthStr}월 ${dayStr}일 ${hourStr}시`;
   const dayPillarName = `${STEMS[di.stem]}${BRANCHES[di.branch]}일주`;
 
-  const { title, description, keywords, advice } = getInterpretation(di.stem, di.branch, isGyeongSinDay);
+  const { title, description, keywords, advice } = getInterpretation(di.stem, di.branch);
 
   return {
     pillars: {
@@ -266,7 +253,6 @@ export function calculateSaju(
       dayHan: pillarNameHan(di.stem, di.branch),
       hourHan: pillarNameHan(ho.stem, ho.branch),
     },
-    isGyeongSinDay,
     typeName,
     dayPillarName,
     title,

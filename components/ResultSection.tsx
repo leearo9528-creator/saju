@@ -33,7 +33,7 @@ export default function ResultSection({
   onShareKakao,
   onShareEvent,
 }: ResultSectionProps) {
-  const { pillars, isGyeongSinDay, title, description } = result;
+  const { pillars } = result;
   const fromIljuDetails = normalizeDetail(iljuDetails[pillars.day]);
   const fromDetailed = detailedInterpretations[pillars.day] ?? detailedInterpretations._default;
   const detail = fromIljuDetails ?? fromDetailed;
@@ -103,31 +103,9 @@ export default function ResultSection({
           </div>
 
           {/* 일주 명칭 강조 */}
-          <p className="text-gold font-bold text-2xl sm:text-3xl mb-8 tracking-wide">
+          <p className="text-gold font-bold text-2xl sm:text-3xl mb-8 tracking-wide text-center">
             {pillars.day}
             <span className="text-gold/90 font-semibold text-lg sm:text-xl ml-1">일주</span>
-          </p>
-
-          {isGyeongSinDay && (
-            <motion.div
-              className="rounded-xl border-2 border-gold bg-gold/10 py-4 px-4 mb-8 text-center"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              <p className="text-gold font-bold text-lg sm:text-xl leading-tight">
-                의리의 혁명가, 세상을 바꾸는 경신일주
-              </p>
-              <p className="text-gold/90 text-sm mt-1">庚申日柱</p>
-            </motion.div>
-          )}
-
-          <p className="text-[10px] text-gray-500 tracking-[0.2em] uppercase mb-2">
-            한 줄 해석
-          </p>
-          <h2 className="text-gold-light text-lg font-semibold mb-3">{title}</h2>
-          <p className="text-gold/90 text-[15px] leading-relaxed mb-6 whitespace-pre-line">
-            {description}
           </p>
 
           {/* 당신은 이런 사람? */}
