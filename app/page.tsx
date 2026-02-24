@@ -92,15 +92,6 @@ export default function Home() {
     }
   };
 
-  const handleShareEvent = () => {
-    const url =
-      process.env.NEXT_PUBLIC_EVENT_URL ||
-      "https://example.com/event";
-    if (typeof window !== "undefined") {
-      window.open(url, "_blank", "noopener,noreferrer");
-    }
-  };
-
   return (
     <main className="min-h-screen pattern-bg pb-8">
       <div className="max-w-lg mx-auto px-4 pt-6 sm:pt-10">
@@ -309,7 +300,6 @@ export default function Home() {
                 name={name}
                 result={result}
                 onShareKakao={handleShareKakao}
-                onShareEvent={handleShareEvent}
               />
             </motion.div>
           )}

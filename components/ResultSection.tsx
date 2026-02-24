@@ -9,7 +9,6 @@ interface ResultSectionProps {
   name: string;
   result: SajuResult;
   onShareKakao: () => void;
-  onShareEvent: () => void;
 }
 
 const listVariants = {
@@ -31,7 +30,6 @@ export default function ResultSection({
   name,
   result,
   onShareKakao,
-  onShareEvent,
 }: ResultSectionProps) {
   const { pillars } = result;
   const fromIljuDetails = normalizeDetail(iljuDetails[pillars.day]);
@@ -186,16 +184,6 @@ export default function ResultSection({
             >
               <span>💬</span>
               카카오톡으로 내 운세 공유하기
-            </motion.button>
-            <motion.button
-              type="button"
-              onClick={onShareEvent}
-              className="w-full py-4 rounded-xl border-2 border-gold/50 text-gold font-semibold text-[15px] flex items-center justify-center gap-2 active:scale-[0.98]"
-              whileHover={{ scale: 1.02, borderColor: "rgba(212,175,55,0.8)" }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <span>🎁</span>
-              복채 대신 나눔 이벤트 참여하기
             </motion.button>
           </div>
         </div>
