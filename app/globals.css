@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-deep: #0a0a23;
+  --gold: #d4af37;
+  --gold-light: #e8c547;
+  --gold-dim: #a68b28;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg-deep);
+  color: var(--gold);
+  min-height: 100vh;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 동양 문양 배경 패턴 */
+.pattern-bg {
+  background-image: 
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(212, 175, 55, 0.08) 0%, transparent 50%),
+    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5 L35 25 L55 30 L35 35 L30 55 L25 35 L5 30 L25 25 Z' fill='none' stroke='%23d4af37' stroke-opacity='0.06' stroke-width='0.5'/%3E%3C/svg%3E");
+}
+
+/* 은은한 반짝임 */
+@keyframes shimmer {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+.shimmer {
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+/* 로딩 별 회전 */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spin-slow {
+  animation: spin-slow 8s linear infinite;
+}
+
+/* 결과 카드: 금색 그라데이션 테두리 애니메이션 */
+@keyframes gold-gradient-border {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.result-card-gradient-border {
+  padding: 3px;
+  border-radius: 1.125rem;
+  background: linear-gradient(
+    120deg,
+    #d4af37,
+    #e8c547,
+    #f0d875,
+    #a68b28,
+    #d4af37
+  );
+  background-size: 300% 300%;
+  animation: gold-gradient-border 6s ease infinite;
+}
+
+/* 결과 카드: 황금 후광 */
+.result-card-glow {
+  box-shadow:
+    0 0 20px rgba(212, 175, 55, 0.2),
+    0 0 40px rgba(212, 175, 55, 0.15),
+    0 0 60px rgba(212, 175, 55, 0.08);
+}
+
+/* 금색 가루/반짝임 입자 */
+@keyframes sparkle {
+  0%, 100% { opacity: 0; transform: scale(0.8); }
+  50% { opacity: 0.6; transform: scale(1); }
+}
