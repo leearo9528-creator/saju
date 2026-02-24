@@ -74,7 +74,7 @@ export default function Home() {
 
   const handleShareKakao = () => {
     if (!result) return;
-    const shareUrl = typeof window !== "undefined" ? window.location.href : "";
+    const shareUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://saju-ebon.vercel.app/";
     const iljuName = result.pillars.day;
     const detail = iljuDetails[iljuName];
     const threeLines = detail?.characteristics?.slice(0, 3).map((c) => `✔️ ${c}`).join("\n")
