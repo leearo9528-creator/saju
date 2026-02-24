@@ -2,6 +2,8 @@
 
 import { motion } from "framer-motion";
 import type { SajuResult } from "@/lib/sajuCalendar";
+import { detailedInterpretations } from "@/lib/detailedInterpretations";
+import { iljuDetails, normalizeDetail } from "@/lib/iljuDetails";
 
 interface ResultSectionProps {
   name: string;
@@ -10,6 +12,21 @@ interface ResultSectionProps {
   onShareEvent: () => void;
 }
 
+const listVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.06,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: -6 },
+  visible: { opacity: 1, y: 0 },
+};
+
 export default function ResultSection({
   name,
   result,
@@ -17,6 +34,9 @@ export default function ResultSection({
   onShareEvent,
 }: ResultSectionProps) {
   const { pillars, isGyeongSinDay, title, description } = result;
+  const fromIljuDetails = normalizeDetail(iljuDetails[pillars.day]);
+  const fromDetailed = detailedInterpretations[pillars.day] ?? detailedInterpretations._default;
+  const detail = fromIljuDetails ?? fromDetailed;
 
   return (
     <motion.section
@@ -88,48 +108,118 @@ export default function ResultSection({
             <span className="text-gold/90 font-semibold text-lg sm:text-xl ml-1">일주</span>
           </p>
 
-        {isGyeongSinDay && (
-          <motion.div
-            className="rounded-xl border-2 border-gold bg-gold/10 py-4 px-4 mb-8 text-center"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            <p className="text-gold font-bold text-lg sm:text-xl leading-tight">
-              의리의 혁명가, 세상을 바꾸는 경신일주
+          {isGyeongSinDay && (
+            <motion.div
+              className="rounded-xl border-2 border-gold bg-gold/10 py-4 px-4 mb-8 text-center"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <p className="text-gold font-bold text-lg sm:text-xl leading-tight">
+                의리의 혁명가, 세상을 바꾸는 경신일주
+              </p>
+              <p className="text-gold/90 text-sm mt-1">庚申日柱</p>
+            </motion.div>
+          )}
+
+          <p className="text-[10px] text-gray-500 tracking-[0.2em] uppercase mb-2">
+            한 줄 해석
+          </p>
+          <h2 className="text-gold-light text-lg font-semibold mb-3">{title}</h2>
+          <p className="text-gold/90 text-[15px] leading-relaxed mb-6 whitespace-pre-line">
+            {description}
+          </p>
+
+          {/* 당신은 이런 사람? */}
+          <div className="mb-8">
+            <p className="text-gold/80 text-sm font-semibold mb-3">
+              당신은 이런 사람?
             </p>
-            <p className="text-gold/90 text-sm mt-1">庚申日柱</p>
-          </motion.div>
-        )}
+            <motion.ul
+              variants={listVariants}
+              initial="hidden"
+              animate="visible"
+              className="space-y-2.5"
+            >
+              {detail.characteristics.map((ch, index) => (
+                <motion.li
+                  key={index}
+                  variants={itemVariants}
+                  className="flex items-start gap-2 text-gold/90 text-[14px] leading-relaxed"
+                >
+                  <span className="mt-[2px]">✅</span>
+                  <span>{ch}</span>
+                </motion.li>
+              ))}
+            </motion.ul>
+          </div>
 
-        <p className="text-[10px] text-gray-500 tracking-[0.2em] uppercase mb-2">한 줄 해석</p>
-        <h2 className="text-gold-light text-lg font-semibold mb-3">{title}</h2>
-        <p className="text-gold/90 text-[15px] leading-relaxed mb-8 whitespace-pre-line">
-          {description}
-        </p>
+          {/* 찰떡 궁합 / 조금 조심할 성향 */}
+          <div className="mt-4 pt-4 border-t border-gold/20 grid gap-4 sm:grid-cols-2 mb-8">
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25 }}
+              className="rounded-xl bg-gold/5 border border-gold/25 p-4"
+            >
+              <p className="text-gold/80 text-xs font-semibold mb-2">
+                찰떡 궁합 🤝
+              </p>
+              <ul className="space-y-1.5 text-gold/90 text-[13px] leading-relaxed">
+                {detail.goodMatch.map((gm, idx) => (
+                  <li key={idx} className="flex gap-2">
+                    <span>✨</span>
+                    <span>{gm}</span>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
 
-        <div className="flex flex-col gap-4">
-          <motion.button
-            type="button"
-            onClick={onShareKakao}
-            className="w-full py-4 rounded-xl bg-[#FEE500] text-[#191919] font-bold text-[15px] flex items-center justify-center gap-2 shadow-lg shadow-[#FEE500]/30 ring-2 ring-[#FEE500]/50 active:scale-[0.98]"
-            whileHover={{ scale: 1.02, boxShadow: "0 8px 24px rgba(254, 229, 0, 0.35)" }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <span>💬</span>
-            카카오톡으로 내 운세 공유하기
-          </motion.button>
-          <motion.button
-            type="button"
-            onClick={onShareEvent}
-            className="w-full py-4 rounded-xl border-2 border-gold/50 text-gold font-semibold text-[15px] flex items-center justify-center gap-2 active:scale-[0.98]"
-            whileHover={{ scale: 1.02, borderColor: "rgba(212,175,55,0.8)" }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <span>🎁</span>
-            복채 대신 나눔 이벤트 참여하기
-          </motion.button>
-        </div>
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35 }}
+              className="rounded-xl bg-deep/60 border border-gold/25 p-4"
+            >
+              <p className="text-gold/80 text-xs font-semibold mb-2">
+                조금 조심할 성향 ⚡
+              </p>
+              <ul className="space-y-1.5 text-gold/90 text-[13px] leading-relaxed">
+                {detail.badMatch.map((bm, idx) => (
+                  <li key={idx} className="flex gap-2">
+                    <span>⚡</span>
+                    <span>{bm}</span>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+          </div>
+
+          <div className="flex flex-col gap-4">
+            <motion.button
+              type="button"
+              onClick={onShareKakao}
+              className="w-full py-4 rounded-xl bg-[#FEE500] text-[#191919] font-bold text-[15px] flex items-center justify-center gap-2 shadow-lg shadow-[#FEE500]/30 ring-2 ring-[#FEE500]/50 active:scale-[0.98]"
+              whileHover={{
+                scale: 1.02,
+                boxShadow: "0 8px 24px rgba(254, 229, 0, 0.35)",
+              }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <span>💬</span>
+              카카오톡으로 내 운세 공유하기
+            </motion.button>
+            <motion.button
+              type="button"
+              onClick={onShareEvent}
+              className="w-full py-4 rounded-xl border-2 border-gold/50 text-gold font-semibold text-[15px] flex items-center justify-center gap-2 active:scale-[0.98]"
+              whileHover={{ scale: 1.02, borderColor: "rgba(212,175,55,0.8)" }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <span>🎁</span>
+              복채 대신 나눔 이벤트 참여하기
+            </motion.button>
+          </div>
         </div>
       </motion.div>
     </motion.section>
