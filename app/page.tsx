@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { calculateSaju, type SajuResult } from "@/lib/sajuCalendar";
 import { sendToGoogleSheets } from "@/lib/googleSheets";
 import type { Gender } from "@/lib/sajuLogic";
+import { iljuDetails } from "@/lib/iljuDetails";
 import LoadingAnimation from "@/components/LoadingAnimation";
 import ResultSection from "@/components/ResultSection";
 
@@ -74,7 +75,11 @@ export default function Home() {
   const handleShareKakao = () => {
     if (!result) return;
     const shareUrl = typeof window !== "undefined" ? window.location.href : "";
-    const shareMessage = `✨ [나의 사주 운명 결과] ✨\n\n${name}님의 사주는 '${result.typeName}'입니다.\n${result.title}\n\n👇 내 운명도 확인하고 짐 나눔 이벤트 참여하기\n${shareUrl}`;
+    const iljuName = result.pillars.day;
+    const detail = iljuDetails[iljuName];
+    const threeLines = detail?.characteristics?.slice(0, 3).map((c) => `✔️ ${c}`).join("\n")
+      ?? `${result.title}\n✔️ 당신의 일간과 일지가 만드는 성향입니다.`;
+    const shareMessage = `✨ [나의 사주 운명 결과] ✨\n\n${name}님은 어떤 사람일까요? 👀\n\n${threeLines}\n\n... (더 보기)\n\n👇 3초만에 내 운명 확인하기\n${shareUrl}`;
     const copyAndAlert = () => {
       copyToClipboard(shareMessage);
       alert("링크와 결과가 복사되었습니다. 카톡창에 붙여넣어 주세요!");
