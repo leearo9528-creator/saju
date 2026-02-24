@@ -1,6 +1,8 @@
 "use client";
 
+import { useRef } from "react";
 import { motion } from "framer-motion";
+import { toPng } from "html-to-image";
 import type { SajuResult } from "@/lib/sajuCalendar";
 import { detailedInterpretations } from "@/lib/detailedInterpretations";
 import { iljuDetails, normalizeDetail } from "@/lib/iljuDetails";
@@ -31,10 +33,28 @@ export default function ResultSection({
   result,
   onShareKakao,
 }: ResultSectionProps) {
+  const captureRef = useRef<HTMLDivElement>(null);
   const { pillars } = result;
   const fromIljuDetails = normalizeDetail(iljuDetails[pillars.day]);
   const fromDetailed = detailedInterpretations[pillars.day] ?? detailedInterpretations._default;
   const detail = fromIljuDetails ?? fromDetailed;
+
+  const handleDownloadImage = async () => {
+    if (captureRef.current === null) return;
+    try {
+      const dataUrl = await toPng(captureRef.current, {
+        cacheBust: true,
+        backgroundColor: "#1e1e1e",
+      });
+      const link = document.createElement("a");
+      link.download = `${name}님의_사주결과.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error("이미지 저장 실패", err);
+      alert("이미지 저장에 실패했습니다.");
+    }
+  };
 
   return (
     <motion.section
@@ -49,7 +69,9 @@ export default function ResultSection({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       >
-        <div className="rounded-2xl bg-deep/95 backdrop-blur p-8 sm:p-10 result-card-glow relative overflow-hidden">
+        <div className="rounded-2xl bg-deep/95 backdrop-blur result-card-glow relative overflow-hidden">
+          {/* 캡처 영역: 버튼 제외, 이미지 저장 시 여백 확보 */}
+          <div ref={captureRef} className="rounded-t-2xl bg-[#1a1a24] p-8 sm:p-10 relative">
           {/* 카드 위 은은한 반짝임 입자 */}
           <div className="absolute inset-0 pointer-events-none">
             {[0, 1, 2, 3, 4, 5].map((i) => (
@@ -171,7 +193,19 @@ export default function ResultSection({
             </motion.div>
           </div>
 
-          <div className="flex flex-col gap-4">
+          </div>
+
+          <div className="px-8 sm:px-10 pb-8 sm:pb-10 flex flex-col gap-4">
+            <motion.button
+              type="button"
+              onClick={handleDownloadImage}
+              className="w-full py-4 rounded-xl border-2 border-gold/50 text-gold font-semibold text-[15px] flex items-center justify-center gap-2 bg-deep/80 hover:bg-gold/10 active:scale-[0.98] transition-colors"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <span>📸</span>
+              결과 이미지로 저장
+            </motion.button>
             <motion.button
               type="button"
               onClick={onShareKakao}
